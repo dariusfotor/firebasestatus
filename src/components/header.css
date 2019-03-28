@@ -1,0 +1,14 @@
+h1{
+    text-align: center;
+    font-size: 42px;
+    margin: auto;
+    
+    letter-spacing: 3px;
+    
+}
+.header{
+    color: aliceblue;
+    width: 100%;
+    height: 80px;
+    background-color: rgb(67, 109, 136);
+}

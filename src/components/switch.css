@@ -1,0 +1,37 @@
+h1{
+text-align: center;
+}
+.switch_wall{
+    margin: 10px 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(67, 109, 136, 0.3);
+}
+.first{
+    display: block;
+    text-align: center;
+    
+}
+button{
+    margin: 0 10px 0 10px;
+    width: 150px;
+    height: 70px;
+    font-size: 22px;
+}
+ul{
+    text-align: center
+}
+.button_del{
+    width: 130px;
+    height: 30px;
+    margin: 5px 10px 5px 0;
+}
+.list{
+    font-size: 27px;
+    font-weight: 500;
+    
+}
+.second{
+    text-align: center;
+    
+}
