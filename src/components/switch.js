@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import * as firebase from 'firebase';
 import './switch.css';
+import './doorchart';
+
 
 
 
@@ -17,10 +19,12 @@ import './switch.css';
 
 class Switch extends Component {
     constructor(props){
-        super(props);
+        super(props)
         this.db_relay = firebase.database().ref().child('Reles_busena');
         this.db_door = firebase.database().ref().child('duru_sensor_status');
         this.db_door_log = firebase.database().ref().child('door_logas');
+        
+          
         this.state = {
             on : 1,
             off : 0,
@@ -29,75 +33,74 @@ class Switch extends Component {
             status_door: "",
             status_door_txt: "",
             door_count: [],
-            time: ""
-           
+            time: [] 
         }
         
     }
     
     
-    // Reles busenos nuskaitymas is firebase
-        componentDidMount(){
-        
-            this.db_relay.on('value', data =>{
-                this.setState({
-                    status_switch: data.val() 
-                });
-    // Reles ijungimu atvaizdavimas DOMe
-                const on_style = document.getElementById('on')
-                if(data.val() === 1){
-                    on_style.style.backgroundColor = 'green'
-                    on_style.style.color = 'white'
-                    this.setState({  
-                        status_switch_txt: "Ijungta"
-                    })
-                    }
-                else{
-                    on_style.style.backgroundColor = 'red'
-                    this.setState({
-                        status_switch_txt: "Isjungta"
-                    })
-                }
-            });
-    // Duru busenos nuskaitymas is firebase ir ju atvaizdavimas
-    
-    // Duomenys is firebase
-        this.db_door.on('value', snap =>{
-            this.setState({
-                status_door:snap.val() 
-            });
+// Reles busenos nuskaitymas is firebase
+componentDidMount(){
 
-        //Duomenu atvaizdavimas DOMe
-        const door_open = document.getElementById('door_open');
-        
-        const add_door = Object.assign([], this.state.door_count);
-        if(snap.val() === 1){
-            door_open.style.backgroundColor = 'green'
-            door_open.style.color = 'white'
-            this.setState({
-                status_door_txt: "Atidaryta",
-                
-                
+    this.db_relay.on('value', data =>{
+        this.setState({
+            status_switch: data.val() 
+        });
+// Reles ijungimu atvaizdavimas DOMe
+        const on_style = document.getElementById('on')
+        if(data.val() === 1){
+            on_style.style.backgroundColor = 'green'
+            on_style.style.color = 'white'
+            this.setState({  
+                status_switch_txt: "Ijungta"
             })
-            add_door.push(this.state.status_door_txt + " " + this.state.time)
-            this.setState({door_count: add_door})
-            //Duru log irasymas i firebasa
-            this.db_door_log.set(this.state.door_count)
             }
         else{
-            door_open.style.backgroundColor = 'red';
-            door_open.style.color = 'white'
+            on_style.style.backgroundColor = 'red'
             this.setState({
-                status_door_txt: "Uzdaryta"
-               
+                status_switch_txt: "Isjungta"
             })
-            add_door.push(this.state.status_door_txt + " " + this.state.time)
-            this.setState({door_count: add_door})
-            //Duru log irasymas i firebasa
-            this.db_door_log.set(this.state.door_count)
-            
         }
     });
+// Duru busenos nuskaitymas is firebase ir ju atvaizdavimas
+
+// Duomenys is firebase
+    this.db_door.on('value', snap =>{
+        this.setState({
+            status_door:snap.val() 
+        });
+
+    //Duomenu atvaizdavimas DOMe
+    const door_open = document.getElementById('door_open');
+    
+    const add_door = Object.assign([], this.state.door_count);
+    if(snap.val() === 1){
+        door_open.style.backgroundColor = 'green'
+        door_open.style.color = 'white'
+        this.setState({
+            status_door_txt: "Atidaryta",
+            
+            
+        })
+        add_door.push(this.state.status_door_txt + " " + this.state.time)
+        this.setState({door_count: add_door})
+        //Duru log irasymas i firebasa
+        this.db_door_log.set(this.state.door_count)
+        }
+    else{
+        door_open.style.backgroundColor = 'red';
+        door_open.style.color = 'white'
+        this.setState({
+            status_door_txt: "Uzdaryta"
+            
+        })
+        add_door.push(this.state.status_door_txt + " " + this.state.time)
+        this.setState({door_count: add_door})
+        //Duru log irasymas i firebasa
+        this.db_door_log.set(this.state.door_count)
+        
+    }
+});
     //Duru log nuskaitymas is firebase
     this.db_door_log.on('value', snap =>{
         this.setState({
@@ -136,12 +139,13 @@ class Switch extends Component {
         setInterval(()=>this.clock(), 1000)
     
 }
+
+
   render() {
+    
    
-    console.log(this.state.door_count)
-    
     return (
-    
+        
     <div className="switch_wall">
         <h1>Jungikliai</h1>
         <hr></hr>
@@ -174,8 +178,7 @@ class Switch extends Component {
                      onClick={()=>this.delete(i)}>Istrinti irasa</button>{door}</li>
                 )}
             </div>
-            
-            
+
         </div>
     </div>
       
