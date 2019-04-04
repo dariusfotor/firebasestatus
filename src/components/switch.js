@@ -94,7 +94,6 @@ componentDidMount(){
     }
 });
     //Duru log nuskaitymas is firebase
-    const list = document.getElementById('list')
     this.db_door_log.orderByKey().limitToLast(6).on('child_added', snap =>{
         this.setState({
             door_count: snap.val()
