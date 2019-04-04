@@ -20,11 +20,7 @@ import './doorchart';
 class Switch extends Component {
     constructor(props){
         super(props)
-        this.db_relay = firebase.database().ref().child('Reles_busena');
-        this.db_door = firebase.database().ref().child('duru_sensor_status');
-        this.db_door_log = firebase.database().ref().child('door_logas');
         
-          
         this.state = {
             on : 1,
             off : 0,
@@ -35,10 +31,10 @@ class Switch extends Component {
             door_count: [],
             time: [] 
         }
-        
+        this.db_relay = firebase.database().ref().child('Reles_busena');
+        this.db_door = firebase.database().ref().child('duru_sensor_status');
+        this.db_door_log = firebase.database().ref().child("door_log");  
     }
-    
-    
 // Reles busenos nuskaitymas is firebase
 componentDidMount(){
 
@@ -73,19 +69,16 @@ componentDidMount(){
     //Duomenu atvaizdavimas DOMe
     const door_open = document.getElementById('door_open');
     
-    const add_door = Object.assign([], this.state.door_count);
     if(snap.val() === 1){
         door_open.style.backgroundColor = 'green'
         door_open.style.color = 'white'
         this.setState({
-            status_door_txt: "Atidaryta",
-            
-            
+            status_door_txt: "Atidaryta",  
         })
-        add_door.push(this.state.status_door_txt + " " + this.state.time)
-        this.setState({door_count: add_door})
         //Duru log irasymas i firebasa
-        this.db_door_log.set(this.state.door_count)
+        this.db_door_log.push({
+            busena: this.state.status_door_txt,
+            laikas: this.state.time})
         }
     else{
         door_open.style.backgroundColor = 'red';
@@ -94,20 +87,21 @@ componentDidMount(){
             status_door_txt: "Uzdaryta"
             
         })
-        add_door.push(this.state.status_door_txt + " " + this.state.time)
-        this.setState({door_count: add_door})
         //Duru log irasymas i firebasa
-        this.db_door_log.set(this.state.door_count)
-        
+        this.db_door_log.push({
+            busena: this.state.status_door_txt,
+            laikas: this.state.time})
     }
 });
     //Duru log nuskaitymas is firebase
-    this.db_door_log.on('value', snap =>{
+    const list = document.getElementById('list')
+    this.db_door_log.orderByKey().limitToLast(6).on('child_added', snap =>{
         this.setState({
-            door_count:snap.val() 
+            door_count: snap.val()
         });
-        
-    })
+        console.log(this.state.door_count)
+        })
+
 }
     //Reles ijungimas
     turnon = () => {
@@ -121,14 +115,6 @@ componentDidMount(){
             this.state.off
         ); 
     } 
-    // Duru log istrynimas
-    delete=(i) =>{
-        this.db_door_log.remove()
-        const door_copy = Object.assign([], this.state.door_count);
-        door_copy.splice(i, 1);
-        this.setState({door_count: door_copy})
-        
-    }
     //Laikrodis
     clock(){
         this.setState({
@@ -137,53 +123,49 @@ componentDidMount(){
     }
     componentWillMount(){
         setInterval(()=>this.clock(), 1000)
-    
 }
 
+render() {
 
-  render() {
+return (
     
-   
-    return (
-        
-    <div className="switch_wall">
-        <h1>Jungikliai</h1>
-        <hr></hr>
-        <div className="first">
-            <h2>Pirmas jungiklis</h2>
-                <div className="busena">
-                <h3 id="on">Sistemos busena: {this.state.status_switch_txt}</h3>
-                </div>
-            <button type="submit" onClick={this.turnon}>Ijungti</button>
-            <button type="submit" onClick={this.turnoff}>Isjungti</button>
-        </div>
-        <p></p>
-        <hr></hr>
-        <p></p>
-        <div className="second">
-        <h2>Antras jungiklis</h2>
-            <h3>Sistemos busena:</h3>
-            <button type="submit">Ijungti</button>
-            <button type="submit">Isjungti</button>
-            <p></p>
-            <hr></hr>
-            <h1 id="door_open">Duru busena: {this.state.status_door_txt}</h1>
-            <p></p>
-            <hr></hr>
-            <h2>Duru atidarymo ir uzdarymo laikas</h2>
-            <div>
-                {this.state.door_count.map((door,i) =>
-                    <li className="list" key={i} >
-                    <button className="button_del" type="submit" id="button_del"
-                     onClick={()=>this.delete(i)}>Istrinti irasa</button>{door}</li>
-                )}
+<div className="switch_wall">
+    
+    <h1>Jungikliai</h1>
+    <hr></hr>
+    <div className="first">
+        <h2>Pirmas jungiklis</h2>
+            <div className="busena">
+            <h3 id="on">Sistemos busena: {this.state.status_switch_txt}</h3>
             </div>
-
-        </div>
+        <button type="submit" onClick={this.turnon}>Ijungti</button>
+        <button type="submit" onClick={this.turnoff}>Isjungti</button>
     </div>
-      
-    );
-  }
+    <p></p>
+    <hr></hr>
+    <p></p>
+    <div className="second">
+    <h2>Antras jungiklis</h2>
+        <h3>Sistemos busena:</h3>
+        <button type="submit">Ijungti</button>
+        <button type="submit">Isjungti</button>
+        <p></p>
+        <hr></hr>
+        <h1 id="door_open">Duru busena: {this.state.status_door_txt}</h1>
+        <p></p>
+        <hr></hr>
+        <h2>Duru atidarymo ir uzdarymo laikas</h2>
+        <h2>{JSON.stringify(this.state.door_count)}</h2>
+            {/* {this.state.door_count.map((door) =>
+                <li className="list" >{door}</li>
+            )} */}
+        
+
+    </div>
+</div>
+    
+);
+}
 }
 
 export default Switch;

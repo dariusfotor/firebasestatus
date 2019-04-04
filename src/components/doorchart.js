@@ -1,43 +1,52 @@
 import React, { Component } from 'react';
-import Chart from "react-apexcharts";
+import { Line } from 'react-chartjs-2';
+import './switch';
 
+const Graph =(props)=>{
 
+  
+  const data = {
+    labels: [],
+    datasets: [
+      {
+        label: '',
+        fill: false,
+        lineTension: 1,
+        backgroundColor: 'rgba(75,192,192,0.4)',
+        borderColor: 'rgba(75,192,192,1)',
+        borderCapStyle: 'butt',
+        borderDash: [],
+        borderDashOffset: 0.0,
+        borderJoinStyle: 'miter',
+        pointBorderColor: 'rgba(75,192,192,1)',
+        pointBackgroundColor: '#fff',
+        pointBorderWidth: 1,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+        pointHoverBorderColor: 'rgba(220,220,220,1)',
+        pointHoverBorderWidth: 2,
+        pointRadius: 1,
+        pointHitRadius: 10,
+        data: []
+      }
+    ]
+  };
+  return(
+    <Line data={data} />
+  )
+
+}
 
 class doorchart extends Component {
-  constructor(props){
-    super(props)
-    this.state ={
-      options: {
-        chart: {
-          id: "basic-bar"
-        },
-        xaxis: {
-          categories: this.props.time
-        }
-      },
-      series: [{
-        name: "series",
-        data: []
-      }]
-     
-    }
-    
-  }
-  
+ 
+
 
   render() {
-    console.log(this.state.options)
+    
     return (
       <div>
-      <Chart
-        options={this.state.options}
-        series={this.state.series}
-        type="line"
-        width ="100%"
-        height = "500"
-        
-      />    
-        
+        <Graph />
+        <h2>{this.props.name}</h2>
       </div>
     );
   }

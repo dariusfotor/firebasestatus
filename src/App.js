@@ -5,18 +5,17 @@ import Doorchart from './components/doorchart';
 
 
 class App extends Component {
-  
-  
+
   render() {
     
     return (
       <div>
       <Header />
-      <Switch />
+      <Switch  />
       <Doorchart />
        
         
-               
+         
       </div>
     );
   }
