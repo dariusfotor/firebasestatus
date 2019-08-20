@@ -17,7 +17,14 @@ button{
     width: 150px;
     height: 70px;
     font-size: 22px;
+
 }
+button :hover{
+    transition: 0.5s;
+    background-color: cornflowerblue;
+    
+}
+
 ul{
     text-align: center
 }
@@ -34,4 +41,14 @@ ul{
 .second{
     text-align: center;
     
+}
+.temp_over{
+    border: 2px solid red;
+border-right: none;
+border-left: none;
+padding: 5px;
+font-size: 26px;
+}
+.temp_over_map{
+    list-style: none;
 }

@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
+import Header from './header';
+import Temp_graph from './tempgraph'
 import * as firebase from 'firebase';
 import './switch.css';
-import './doorchart';
-
-
-
 
   // Initialize Firebase
   var config = {
@@ -29,11 +27,19 @@ class Switch extends Component {
             status_door: "",
             status_door_txt: "",
             door_count: [],
-            time: [] 
+            time: [],
+            temp: "",
+            humidity: "",
+            temp_over_27: "",
+            chartData:{}
         }
         this.db_relay = firebase.database().ref().child('Reles_busena');
         this.db_door = firebase.database().ref().child('duru_sensor_status');
-        this.db_door_log = firebase.database().ref().child("door_log");  
+        this.db_door_log = firebase.database().ref().child("door_log"); 
+        this.db_temp = firebase.database().ref().child("Temperatura");
+        this.db_dregme = firebase.database().ref().child("Dregme");
+        this.db_temp_over = firebase.database().ref().child("Temp_virs_27");
+
     }
 // Reles busenos nuskaitymas is firebase
 componentDidMount(){
@@ -64,6 +70,7 @@ componentDidMount(){
     this.db_door.on('value', snap =>{
         this.setState({
             status_door:snap.val() 
+            
         });
 
     //Duomenu atvaizdavimas DOMe
@@ -94,14 +101,43 @@ componentDidMount(){
     }
 });
     //Duru log nuskaitymas is firebase
-    this.db_door_log.orderByKey().limitToLast(6).on('child_added', snap =>{
+    this.db_door_log.orderByKey().limitToLast(3).on('value', snap =>{
         this.setState({
             door_count: snap.val()
         });
         console.log(this.state.door_count)
         })
-
+    //Temperaturos nuskaitymas is firebase
+    this.db_temp.on('value', snap=>{
+        this.setState({
+            temp: snap.val(),
+        })
+        if(this.state.temp > 24){
+            this.db_temp_over.push({
+                laikas: this.state.time,
+                busena: this.state.temp,
+            })
+        }
+    }
+    );
+    
+    //Temperaturos virs 27 nuskaitymas
+    
+        this.db_temp_over.orderByKey().limitToLast(1).on('value', snap=>{
+            this.setState({
+                temp_over_27: snap.val()
+            })
+        });
+      
+    //Dregmes nuskaitymas is firebase
+    this.db_dregme.on('value', snap=>{
+        this.setState({
+            humidity: snap.val(),
+        })
+    }
+    )
 }
+
     //Reles ijungimas
     turnon = () => {
         this.db_relay.set(
@@ -117,26 +153,47 @@ componentDidMount(){
     //Laikrodis
     clock(){
         this.setState({
-            time: "laikas:" + " " + new Date().toLocaleTimeString() + " " + new Date().toLocaleDateString()
+            time: new Date().toLocaleString()
         })
     }
+    //Duomenys i temp diagrama
+    getChartData(){
+        let timer = setInterval(()=> new Date().toLocaleString(), 500)
+        let tempForChart = setInterval(()=> this.state.temp, 500)
+        this.setState({
+            chartData:{
+                labels: [timer],
+                datasets:[
+                  {
+                    label:"",
+                    data: [tempForChart]
+                  }
+                ]
+        }   
+})
+}
     componentWillMount(){
-        setInterval(()=>this.clock(), 1000)
+        setInterval(()=>this.clock(), 500);
+        this.getChartData()
+        
+        
+  
 }
 
 render() {
-
+    
+    // console.log(this.state.chartData)
 return (
     
 <div className="switch_wall">
-    
+    <Header time={this.state.time} />
     <h1>Jungikliai</h1>
     <hr></hr>
     <div className="first">
         <h2>Pirmas jungiklis</h2>
-            <div className="busena">
+            
             <h3 id="on">Sistemos busena: {this.state.status_switch_txt}</h3>
-            </div>
+            
         <button type="submit" onClick={this.turnon}>Ijungti</button>
         <button type="submit" onClick={this.turnoff}>Isjungti</button>
     </div>
@@ -145,21 +202,26 @@ return (
     <p></p>
     <div className="second">
     <h2>Antras jungiklis</h2>
-        <h3>Sistemos busena:</h3>
+        <h3 id="on">Sistemos busena:</h3>
         <button type="submit">Ijungti</button>
         <button type="submit">Isjungti</button>
         <p></p>
         <hr></hr>
+    <h2>Temperatura {this.state.temp}C</h2>
+    <h2>Dregme {this.state.humidity}%</h2>
+    <h2 className="temp_over">Paskutini karta temp. virsijo 24C {Object.values(this.state.temp_over_27).map((temp, i)=>
+        <li className="temp_over_map" key={i}>Uzfiksuota temp. {temp.busena}"C", Laikas: {temp.laikas}</li>)}</h2>
         <h1 id="door_open">Duru busena: {this.state.status_door_txt}</h1>
         <p></p>
-        <hr></hr>
-        <h2>Duru atidarymo ir uzdarymo laikas</h2>
-        <h2>{JSON.stringify(this.state.door_count)}</h2>
-            {/* {this.state.door_count.map((door) =>
-                <li className="list" >{door}</li>
-            )} */}
         
-
+        <h2>Duru atidarymo ir uzdarymo laikas</h2>
+        <h2>{Object.values(this.state.door_count).map((door,i)=>
+           <li key ={i}>{door.busena}, {door.laikas}</li> )}</h2>
+    </div>
+    <hr></hr>
+    <div className="temp_graph">
+    <Temp_graph chartTemp={this.state.chartData}
+    />
     </div>
 </div>
     

@@ -9,6 +9,10 @@ h1{
 .header{
     color: aliceblue;
     width: 100%;
-    height: 80px;
+    min-height: auto;
     background-color: rgb(67, 109, 136);
+}
+.time{
+    text-align: center;
+    padding:  10px 0px;
 }
