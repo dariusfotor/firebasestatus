@@ -31,6 +31,8 @@ class Switch extends Component {
             temp: "",
             humidity: "",
             temp_over_27: "",
+            valueTemp_over: "",
+            newTempValue_over: "",
             chartData:{}
         }
         this.db_relay = firebase.database().ref().child('Reles_busena');
@@ -39,6 +41,8 @@ class Switch extends Component {
         this.db_temp = firebase.database().ref().child("Temperatura");
         this.db_dregme = firebase.database().ref().child("Dregme");
         this.db_temp_over = firebase.database().ref().child("Temp_virs_27");
+
+        // this.handleChange = this.handleChange.bind(this);
 
     }
 // Reles busenos nuskaitymas is firebase
@@ -112,7 +116,7 @@ componentDidMount(){
         this.setState({
             temp: snap.val(),
         })
-        if(this.state.temp > 24){
+        if(this.state.temp > this.state.setTemp_over){
             this.db_temp_over.push({
                 laikas: this.state.time,
                 busena: this.state.temp,
@@ -156,6 +160,28 @@ componentDidMount(){
             time: new Date().toLocaleString()
         })
     }
+    //Nustatyti virsijama temp.
+    handleChange(e){
+            this.setState({
+                valueTemp_over: e.target.value
+            })
+        console.log(this.state.valueTemp_over)
+    }
+
+    submitTemp_over(e){
+        e.preventDefault();
+        let valueTemp = this.state.valueTemp_over
+        let newValueTemp = [...this.state.newTempValue_over, valueTemp]
+        if(valueTemp.length <= 2){
+        this.setState({
+            newTempValue_over: newValueTemp,
+            valueTemp_over: ""
+        })
+    }else{
+        alert("Iveskite du skaicius")
+    }
+            
+        }
     //Duomenys i temperaturos diagrama
 
     getChartData(){
@@ -165,8 +191,10 @@ componentDidMount(){
                 datasets:[
                   {
                     label:"Kambario temp.",
-                    data: []
-                  }
+                    data: [],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                    ]}
                 ]
         }   
 })
@@ -178,7 +206,6 @@ data() {
     const dataCopy = datasetsCopy[0].data.slice(0);
     dataCopy[0] = tempera;
     datasetsCopy[0].data = dataCopy;
-
     this.setState({
         chartData: Object.assign({}, this.state.chartData, {
             datasets: datasetsCopy
@@ -189,10 +216,8 @@ data() {
 //Laikas X asyje
 labels() {
     const newLabels = [...this.state.chartData.labels, this.state.time]
-    const labelsCopy = this.state.chartData.labels;
-    console.log(newLabels)
     this.setState({
-        labelsCopy: newLabels
+        chartData:{...this.state.chartData, labels: newLabels}
         })
 }
 
@@ -201,16 +226,13 @@ labels() {
         this.getChartData();
         setInterval(() => this.data(),1000);
         setInterval(() => this.labels(),1000)
+    
 
-        console.log(this.state.chartData)
-        
-        
-  
 }
 
 render() {
-    
-    // console.log(this.state.chartData)
+
+
 return (
     
 <div className="switch_wall">
@@ -237,8 +259,24 @@ return (
         <hr></hr>
     <h2>Temperatura {this.state.temp}C</h2>
     <h2>Dregme {this.state.humidity}%</h2>
-    <h2 className="temp_over">Paskutini karta temp. virsijo 24C {Object.values(this.state.temp_over_27).map((temp, i)=>
+    <div className="temp_over">
+    <form>
+            <label>
+                <h2>Nustatyti virsijama temp.</h2>
+                <input type="text"
+                       className="setTemp_over" 
+                       pattern="^-?[0-9]\d*\.?\d*$"
+                       value ={this.state.valueTemp_over}
+                       onChange={this.handleChange.bind(this)}
+                 />
+            </label>
+            <button type ="submit" onClick={this.submitTemp_over.bind(this)}>Nustatyti</button>
+        </form>
+    <h2 >Paskutini karta temp. virsijo {this.state.newTempValue_over}C {Object.values(this.state.temp_over_27).map((temp, i)=>
         <li className="temp_over_map" key={i}>Uzfiksuota temp. {temp.busena}"C", Laikas: {temp.laikas}</li>)}</h2>
+    </div>
+
+        
         <h1 id="door_open">Duru busena: {this.state.status_door_txt}</h1>
         <p></p>
         
@@ -249,8 +287,8 @@ return (
     <hr></hr>
     <div className="temp_graph">
     <Temp_graph chartTemp={this.state.chartData}
-    
     />
+    
     </div>
 </div>
     

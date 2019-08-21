@@ -2,5 +2,5 @@ h1{
     text-align: center;
 }
 .temp_graph{
-    height: 750px;
+    min-height: auto;
 }

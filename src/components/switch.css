@@ -47,8 +47,15 @@ ul{
 border-right: none;
 border-left: none;
 padding: 5px;
-font-size: 26px;
+font-size: 18px;
 }
 .temp_over_map{
     list-style: none;
+}
+.setTemp_over{
+    width: 75px;
+    height: 40px;
+    border-radius: 5%;
+    font-size: 25px;
+    text-align: center;
 }
