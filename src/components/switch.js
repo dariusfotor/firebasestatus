@@ -116,14 +116,15 @@ componentDidMount(){
         this.setState({
             temp: snap.val(),
         })
-        if(this.state.temp > this.state.setTemp_over){
-            this.db_temp_over.push({
+        if(this.state.temp > this.state.newTempValue_over ){
+            setInterval(()=>this.db_temp_over.push({
                 laikas: this.state.time,
                 busena: this.state.temp,
-            })
+            }), 60000)
         }
     }
     );
+
     
     //Temperaturos virs 27 nuskaitymas
     
@@ -165,7 +166,6 @@ componentDidMount(){
             this.setState({
                 valueTemp_over: e.target.value
             })
-        console.log(this.state.valueTemp_over)
     }
 
     submitTemp_over(e){
@@ -182,6 +182,19 @@ componentDidMount(){
     }
             
         }
+        eraseTemp(e){
+            e.preventDefault();
+            this.setState({
+                newTempValue_over: ""
+            })
+        }
+    //Irasymas i firebase Temp_over istrynus visa loga
+    setTempToFirebase(){
+        this.db_temp_over.push({
+            laikas: this.state.time,
+            busena: this.state.temp,
+        })
+    }
     //Duomenys i temperaturos diagrama
 
     getChartData(){
@@ -223,6 +236,8 @@ labels() {
 
     componentWillMount(){
         setInterval(()=>this.clock(), 500);
+        this.setTempToFirebase()
+        setInterval(() => this.data(),1000);
         this.getChartData();
         setInterval(() => this.data(),1000);
         setInterval(() => this.labels(),1000)
@@ -271,6 +286,7 @@ return (
                  />
             </label>
             <button type ="submit" onClick={this.submitTemp_over.bind(this)}>Nustatyti</button>
+            <button className="erase_temp" type ="submit" onClick={this.eraseTemp.bind(this)}>Istrinti is paneles</button>
         </form>
     <h2 >Paskutini karta temp. virsijo {this.state.newTempValue_over}C {Object.values(this.state.temp_over_27).map((temp, i)=>
         <li className="temp_over_map" key={i}>Uzfiksuota temp. {temp.busena}"C", Laikas: {temp.laikas}</li>)}</h2>
@@ -283,7 +299,7 @@ return (
         <h2>Duru atidarymo ir uzdarymo laikas</h2>
         <h2>{Object.values(this.state.door_count).map((door,i)=>
            <li key ={i}>{door.busena}, {door.laikas}</li> )}</h2>
-    </div>
+</div>
     <hr></hr>
     <div className="temp_graph">
     <Temp_graph chartTemp={this.state.chartData}
