@@ -13,7 +13,7 @@ class Temp_graph extends Component {
         
     }
   }
-
+  
   render() {
     return (
       <div className="temp_graph">

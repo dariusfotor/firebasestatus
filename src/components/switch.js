@@ -156,25 +156,53 @@ componentDidMount(){
             time: new Date().toLocaleString()
         })
     }
-    //Duomenys i temp diagrama
+    //Duomenys i temperaturos diagrama
+
     getChartData(){
-        let timer = setInterval(()=> new Date().toLocaleString(), 500)
-        let tempForChart = setInterval(()=> this.state.temp, 500)
         this.setState({
             chartData:{
-                labels: [timer],
+                labels: [],
                 datasets:[
                   {
-                    label:"",
-                    data: [tempForChart]
+                    label:"Kambario temp.",
+                    data: []
                   }
                 ]
         }   
 })
 }
+// Temperatura Y asyje
+data() {
+    const tempera = this.state.temp
+    const datasetsCopy = this.state.chartData.datasets.slice(0);
+    const dataCopy = datasetsCopy[0].data.slice(0);
+    dataCopy[0] = tempera;
+    datasetsCopy[0].data = dataCopy;
+
+    this.setState({
+        chartData: Object.assign({}, this.state.chartData, {
+            datasets: datasetsCopy
+        })
+    });
+}
+
+//Laikas X asyje
+labels() {
+    const newLabels = [...this.state.chartData.labels, this.state.time]
+    const labelsCopy = this.state.chartData.labels;
+    console.log(newLabels)
+    this.setState({
+        labelsCopy: newLabels
+        })
+}
+
     componentWillMount(){
         setInterval(()=>this.clock(), 500);
-        this.getChartData()
+        this.getChartData();
+        setInterval(() => this.data(),1000);
+        setInterval(() => this.labels(),1000)
+
+        console.log(this.state.chartData)
         
         
   
@@ -221,6 +249,7 @@ return (
     <hr></hr>
     <div className="temp_graph">
     <Temp_graph chartTemp={this.state.chartData}
+    
     />
     </div>
 </div>
