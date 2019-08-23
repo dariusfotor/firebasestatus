@@ -3,6 +3,7 @@ import Header from './header';
 import Temp_graph from './tempgraph'
 import * as firebase from 'firebase';
 import './switch.css';
+import RTChart from 'react-rt-chart';
 
   // Initialize Firebase
   var config = {
@@ -118,7 +119,7 @@ componentDidMount(){
             temp: snap.val(),
         })
         const blink = document.getElementById("blinkText")
-        if(this.state.temp > this.state.newTempValue_over ){
+        if(this.state.temp >= this.state.newTempValue_over ){
             
             this.db_temp_over.set({
                 laikas: this.state.time,
@@ -127,8 +128,6 @@ componentDidMount(){
         }
     }
     ), 5000)
-
-    
     //Temperaturos virs 27 nuskaitymas
     
         this.db_temp_over.orderByKey().limitToLast(2).on('value', snap=>{
@@ -145,6 +144,7 @@ componentDidMount(){
         })
     }
     )
+    setInterval(() => this.forceUpdate(), 10000);
 }
 
     //Reles ijungimas
@@ -224,6 +224,12 @@ data() {
     });
 }
 
+// data() {
+//     const newdata = [...this.state.chartData.datasets.data, this.state.temp]
+//     this.setState({
+//         chartData:{...this.state.chartData.datasets, data: newdata}
+//         })
+// }
 //Laikas X asyje
 labels() {
     const newLabels = [...this.state.chartData.labels, this.state.time]
@@ -232,8 +238,21 @@ labels() {
         })
 }
 
+//Laikas X asyje
+// labels() {
+//     const time = this.state.time
+//     const labelssetsCopy = this.state.chartData.labels.slice(0);
+//     labelssetsCopy[0] = time + time;
+//     this.setState({
+//         chartData: Object.assign({}, this.state.chartData, {
+//              labels: labelssetsCopy
+//         })
+//     });
+// }
+
+
     componentWillMount(){
-        setInterval(()=>this.clock(), 500);
+        setInterval(()=>this.clock(), 1000);
         this.getChartData();
         setInterval(() => this.data(),1000);
         setInterval(() => this.labels(),1000)
@@ -242,7 +261,14 @@ labels() {
 }
 
 render() {
+console.log(this.state.chartData)
 
+
+    var data = {
+      date: this.state.time,
+      Car: this.state.temp,
+      
+    };
 
 return (
     
@@ -301,7 +327,9 @@ return (
     <div className="temp_graph">
     <Temp_graph chartTemp={this.state.chartData}
     />
-    
+    <RTChart
+            fields={['Car']}
+            data={data} />
     </div>
 </div>
     
