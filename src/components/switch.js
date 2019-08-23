@@ -256,7 +256,7 @@ return (
             <button className="erase_temp" type ="submit" onClick={this.eraseTemp.bind(this)}>Istrinti is paneles</button>
         </form>
     <h2 >Nustatyta virsijama temp. <span className="setTemp">{this.state.newTempValue_over}</span>C 
-    <div>Uzfiksuota virsijama Temp. ir laikas :</div> {Object.values(this.state.temp_over_27).map((temp, i)=>
+    <div>Uzfiksuota :</div> {Object.values(this.state.temp_over_27).map((temp, i)=>
         <div className="temp_over_map" key={i}><span className="blinkText">{temp}</span> </div>)}</h2>
     </div>
     <div className="temp_graph"><h2>Temperaturos ir dregmes diagrama realiu laiku</h2>
