@@ -192,13 +192,7 @@ componentDidMount(){
                 newTempValue_over: ""
             })
         }
-    //Irasymas i firebase Temp_over istrynus visa loga
-    setTempToFirebase(){
-        this.db_temp_over.push({
-            laikas: this.state.time,
-            busena: this.state.temp,
-        })
-    }
+    
     //Duomenys i temperaturos diagrama
 
     getChartData(){
@@ -240,8 +234,6 @@ labels() {
 
     componentWillMount(){
         setInterval(()=>this.clock(), 500);
-        // this.setTempToFirebase()
-        setInterval(() => this.data(),1000);
         this.getChartData();
         setInterval(() => this.data(),1000);
         setInterval(() => this.labels(),1000)
