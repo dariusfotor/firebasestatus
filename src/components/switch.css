@@ -62,3 +62,17 @@ font-size: 18px;
 .erase_temp{
     font-size: 17px;
 }
+.setTemp{
+    color: red;
+}
+#blinkText{
+    animation: blinker 1.5s linear infinite;
+    color: red;
+}
+
+@keyframes blinker {
+  30% {
+    opacity: 0.4;
+  }
+}
+

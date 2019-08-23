@@ -111,27 +111,31 @@ componentDidMount(){
         });
         console.log(this.state.door_count)
         })
+        
     //Temperaturos nuskaitymas is firebase
-    this.db_temp.on('value', snap=>{
+    setInterval(()=>this.db_temp.on('value', snap=>{
         this.setState({
             temp: snap.val(),
         })
+        const blink = document.getElementById("blinkText")
         if(this.state.temp > this.state.newTempValue_over ){
-            setInterval(()=>this.db_temp_over.push({
+            
+            this.db_temp_over.set({
                 laikas: this.state.time,
-                busena: this.state.temp,
-            }), 60000)
+                busena: this.state.temp + "C",
+            })
         }
     }
-    );
+    ), 5000)
 
     
     //Temperaturos virs 27 nuskaitymas
     
-        this.db_temp_over.orderByKey().limitToLast(1).on('value', snap=>{
+        this.db_temp_over.orderByKey().limitToLast(2).on('value', snap=>{
             this.setState({
                 temp_over_27: snap.val()
             })
+            console.log(snap.val())
         });
       
     //Dregmes nuskaitymas is firebase
@@ -236,7 +240,7 @@ labels() {
 
     componentWillMount(){
         setInterval(()=>this.clock(), 500);
-        this.setTempToFirebase()
+        // this.setTempToFirebase()
         setInterval(() => this.data(),1000);
         this.getChartData();
         setInterval(() => this.data(),1000);
@@ -288,8 +292,9 @@ return (
             <button type ="submit" onClick={this.submitTemp_over.bind(this)}>Nustatyti</button>
             <button className="erase_temp" type ="submit" onClick={this.eraseTemp.bind(this)}>Istrinti is paneles</button>
         </form>
-    <h2 >Paskutini karta temp. virsijo {this.state.newTempValue_over}C {Object.values(this.state.temp_over_27).map((temp, i)=>
-        <li className="temp_over_map" key={i}>Uzfiksuota temp. {temp.busena}"C", Laikas: {temp.laikas}</li>)}</h2>
+    <h2 >Nustatyta virsijama temp. <span className="setTemp">{this.state.newTempValue_over}</span>C 
+    <div>Uzfiksuota virsijama Temp. ir laikas :</div> {Object.values(this.state.temp_over_27).map((temp, i)=>
+        <div className="temp_over_map" key={i}><span id="blinkText">{temp}</span> </div>)}</h2>
     </div>
 
         
