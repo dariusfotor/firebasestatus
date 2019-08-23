@@ -34,7 +34,7 @@ class Switch extends Component {
             temp_over_27: "",
             valueTemp_over: "",
             newTempValue_over: "",
-            time_graph: new Date()
+            time_graph: []
         }
         this.db_relay = firebase.database().ref().child('Reles_busena');
         this.db_door = firebase.database().ref().child('duru_sensor_status');
@@ -127,7 +127,7 @@ componentDidMount(){
             })
         }
     }
-    ), 10000)
+    ), 5000)
     //Temperaturos virs 27 nuskaitymas
     
         this.db_temp_over.orderByKey().limitToLast(2).on('value', snap=>{
@@ -144,7 +144,7 @@ componentDidMount(){
         })
     }
     )
-    setInterval(() => this.forceUpdate(), 3000);
+
 }
 
     //Reles ijungimas
@@ -163,6 +163,11 @@ componentDidMount(){
     clock(){
         this.setState({
             time: new Date().toLocaleString()
+        })
+    }
+    timeDiagram(){
+        this.setState({
+            time_diagram: new Date().toLocaleString()
         })
     }
     //Nustatyti virsijama temp.
@@ -195,6 +200,7 @@ componentDidMount(){
 
     componentWillMount(){
         setInterval(()=>this.clock(), 1000);
+        setInterval(()=>this.timeDiagram(), 10000);
         
 }
 
@@ -203,7 +209,7 @@ render() {
         duration: 5000
     };
     var data = {
-      date: this.state.time,
+      date: this.state.time_diagram,
       Temperatura: this.state.temp,
       Dregme: this.state.humidity
       
