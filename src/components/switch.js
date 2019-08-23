@@ -34,7 +34,7 @@ class Switch extends Component {
             temp_over_27: "",
             valueTemp_over: "",
             newTempValue_over: "",
-            chartData:{}
+            time_graph: new Date()
         }
         this.db_relay = firebase.database().ref().child('Reles_busena');
         this.db_door = firebase.database().ref().child('duru_sensor_status');
@@ -127,7 +127,7 @@ componentDidMount(){
             })
         }
     }
-    ), 5000)
+    ), 10000)
     //Temperaturos virs 27 nuskaitymas
     
         this.db_temp_over.orderByKey().limitToLast(2).on('value', snap=>{
@@ -144,7 +144,7 @@ componentDidMount(){
         })
     }
     )
-    setInterval(() => this.forceUpdate(), 10000);
+    setInterval(() => this.forceUpdate(), 3000);
 }
 
     //Reles ijungimas
@@ -195,16 +195,17 @@ componentDidMount(){
 
     componentWillMount(){
         setInterval(()=>this.clock(), 1000);
-
+        
 }
 
 render() {
-console.log(this.state.chartData)
-
-
+    var flow = {
+        duration: 5000
+    };
     var data = {
       date: this.state.time,
       Temperatura: this.state.temp,
+      Dregme: this.state.humidity
       
     };
 
@@ -250,11 +251,12 @@ return (
         </form>
     <h2 >Nustatyta virsijama temp. <span className="setTemp">{this.state.newTempValue_over}</span>C 
     <div>Uzfiksuota virsijama Temp. ir laikas :</div> {Object.values(this.state.temp_over_27).map((temp, i)=>
-        <div className="temp_over_map" key={i}><span id="blinkText">{temp}</span> </div>)}</h2>
+        <div className="temp_over_map" key={i}><span className="blinkText">{temp}</span> </div>)}</h2>
     </div>
     <div className="temp_graph"><h2>Temperaturos ir dregmes diagrama realiu laiku</h2>
     <RTChart
-            fields={['Temperatura']}
+            flow={flow}
+            fields={['Temperatura', "Dregme"]}
             data={data} />
     </div>
         
