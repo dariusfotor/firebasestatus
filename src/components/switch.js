@@ -42,7 +42,7 @@ class Switch extends Component {
         this.db_dregme = firebase.database().ref().child("Dregme");
         this.db_temp_over = firebase.database().ref().child("Temp_virs_27");
 
-        // this.handleChange = this.handleChange.bind(this);
+
 
     }
 // Reles busenos nuskaitymas is firebase

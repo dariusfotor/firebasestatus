@@ -66,12 +66,12 @@ font-size: 18px;
     color: red;
 }
 #blinkText{
-    animation: blinker 1.5s linear infinite;
+    animation: blinker 2s linear infinite;
     color: red;
 }
 
 @keyframes blinker {
-  30% {
+  50% {
     opacity: 0.4;
   }
 }
