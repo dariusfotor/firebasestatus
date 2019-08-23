@@ -65,6 +65,9 @@ font-size: 18px;
 .setTemp{
     color: red;
 }
+.temp_graph{
+    padding: 20px 0px;
+}
 #blinkText{
     animation: blinker 2s linear infinite;
     color: red;

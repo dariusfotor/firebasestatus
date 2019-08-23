@@ -122,8 +122,8 @@ componentDidMount(){
         if(this.state.temp >= this.state.newTempValue_over ){
             
             this.db_temp_over.set({
-                laikas: this.state.time,
-                busena: this.state.temp + "C",
+                laikas: "Laikas: " + this.state.time,
+                busena: "Temperatura: " + this.state.temp + "C",
             })
         }
     }
@@ -192,71 +192,9 @@ componentDidMount(){
                 newTempValue_over: ""
             })
         }
-    
-    //Duomenys i temperaturos diagrama
-
-    getChartData(){
-        this.setState({
-            chartData:{
-                labels: [],
-                datasets:[
-                  {
-                    label:"Kambario temp.",
-                    data: [],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                    ]}
-                ]
-        }   
-})
-}
-// Temperatura Y asyje
-data() {
-    const tempera = this.state.temp
-    const datasetsCopy = this.state.chartData.datasets.slice(0);
-    const dataCopy = datasetsCopy[0].data.slice(0);
-    dataCopy[0] = tempera;
-    datasetsCopy[0].data = dataCopy;
-    this.setState({
-        chartData: Object.assign({}, this.state.chartData, {
-            datasets: datasetsCopy
-        })
-    });
-}
-
-// data() {
-//     const newdata = [...this.state.chartData.datasets.data, this.state.temp]
-//     this.setState({
-//         chartData:{...this.state.chartData.datasets, data: newdata}
-//         })
-// }
-//Laikas X asyje
-labels() {
-    const newLabels = [...this.state.chartData.labels, this.state.time]
-    this.setState({
-        chartData:{...this.state.chartData, labels: newLabels}
-        })
-}
-
-//Laikas X asyje
-// labels() {
-//     const time = this.state.time
-//     const labelssetsCopy = this.state.chartData.labels.slice(0);
-//     labelssetsCopy[0] = time + time;
-//     this.setState({
-//         chartData: Object.assign({}, this.state.chartData, {
-//              labels: labelssetsCopy
-//         })
-//     });
-// }
-
 
     componentWillMount(){
         setInterval(()=>this.clock(), 1000);
-        this.getChartData();
-        setInterval(() => this.data(),1000);
-        setInterval(() => this.labels(),1000)
-    
 
 }
 
@@ -266,7 +204,7 @@ console.log(this.state.chartData)
 
     var data = {
       date: this.state.time,
-      Car: this.state.temp,
+      Temperatura: this.state.temp,
       
     };
 
@@ -314,7 +252,11 @@ return (
     <div>Uzfiksuota virsijama Temp. ir laikas :</div> {Object.values(this.state.temp_over_27).map((temp, i)=>
         <div className="temp_over_map" key={i}><span id="blinkText">{temp}</span> </div>)}</h2>
     </div>
-
+    <div className="temp_graph"><h2>Temperaturos ir dregmes diagrama realiu laiku</h2>
+    <RTChart
+            fields={['Temperatura']}
+            data={data} />
+    </div>
         
         <h1 id="door_open">Duru busena: {this.state.status_door_txt}</h1>
         <p></p>
@@ -324,13 +266,7 @@ return (
            <li key ={i}>{door.busena}, {door.laikas}</li> )}</h2>
 </div>
     <hr></hr>
-    <div className="temp_graph">
-    <Temp_graph chartTemp={this.state.chartData}
-    />
-    <RTChart
-            fields={['Car']}
-            data={data} />
-    </div>
+    
 </div>
     
 );
